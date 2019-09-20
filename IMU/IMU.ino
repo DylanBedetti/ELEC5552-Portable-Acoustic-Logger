@@ -26,7 +26,7 @@ void setup() {
   //***********SETTING UP WRITES***************************
   
   Wire.begin();                                                        //Start I2C as master
-  Serial.begin(115200);                                               //Use only for debugging                                                           // Set chip select on the SD
+  Serial.begin(9600);                                               //Use only for debugging                                                           // Set chip select on the SD
   
   //**********SETING UP SD CARD****************************
   // see if the card is present and can be initialized:
@@ -50,6 +50,7 @@ void setup() {
 
 void loop(){//***************MAIN LOOP************
 if(IMU_timer==0||micros()-IMU_timer>=4000){
+  IMU_opperate("ACC.bin");
   IMU_timer=micros();
   }    
 }
