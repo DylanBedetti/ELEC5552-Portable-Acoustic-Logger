@@ -94,13 +94,14 @@ if(GPS_timer==0||micros()-GPS_timer>=GPS_PERIOD){// 1 [HZ] GPS
  
 void file_time_set(){
     GPSTIME="";
-    String YYYY = String(myGPS.getYear());
-    String MM   = String(myGPS.getMonth());
-    String DD   = String(myGPS.getDay());
-    String HR   = String(myGPS.getHour());
-    String MIN  = String(myGPS.getMinute());
-    String SEC  = String(myGPS.getSecond());
-    GPSTIME=YYYY+"-"+MM+"-"+DD+"-"+HR+":"+MIN+":"+SEC;
+    String YYYY = (String) myGPS.getYear();
+    String MM   = (String) myGPS.getMonth();
+    String DD   = (String) myGPS.getDay();
+    String HR   = (String) myGPS.getHour();
+    String MIN  = (String) myGPS.getMinute();
+    String SEC  = (String) myGPS.getSecond();
+    
+    GPSTIME=YYYY+"_"+MM+"_"+DD+"_"+HR+"_"+MIN+"_"+SEC;
     
     Serial.print(GPSTIME);
 }
@@ -152,7 +153,8 @@ void IMU_operate(String fileName){
   aZ=acc_z;
 
   //  //Write accelerometer values to file
-  accFile = SD.open(GPSTIME+fileName, FILE_WRITE);
+  String fname=GPSTIME+fileName;
+  accFile = SD.open(fileName, FILE_WRITE);
   write_binary_int(angle_x,accFile);
   write_binary_int(angle_y,accFile);
   write_binary_int(angle_z,accFile);
