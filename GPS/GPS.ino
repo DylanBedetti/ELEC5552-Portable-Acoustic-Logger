@@ -77,7 +77,7 @@ void setup() {
 }
 
 void loop(){//***************MAIN LOOP************
-if(FILE_timer==0||micros()-FILE_timer>=FILE_PERIOD){
+if(FILE_timer==0||micros()-FILE_timer>=FILE_PERIOD){//James in this loop is where files are being written
 
   FILE_timer=millis();
   }
@@ -85,7 +85,7 @@ if(IMU_timer==0||micros()-IMU_timer>=IMU_PERIOD){//250 [HZ] for the MPU
   IMU_operate("ACC.bin");
   IMU_timer=micros();
   }    
-if(GPS_timer==0||micros()-GPS_timer>=GPS_PERIOD){// 1 [HZ] GPS
+if(GPS_timer==0||micros()-GPS_timer>=GPS_PERIOD){// 1 [HZ] GPS ///James this needes to be moved to be done inbetween writing files
   GPS_operate();
   GPS_timer=micros();
   }
