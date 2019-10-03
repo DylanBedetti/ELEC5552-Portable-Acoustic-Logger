@@ -1,8 +1,6 @@
 #include <pcmRF.h>
 #include <pcmConfig.h>
 #include <TMRpcm.h>
-int cal=0;
-
 #include <SD.h>
 #include <SPI.h>
 
