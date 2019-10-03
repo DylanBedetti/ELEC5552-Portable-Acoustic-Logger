@@ -36,7 +36,7 @@ void setup(){
   audio1.CSPin = SD_ChipSelectPin;//setting audio object select pins
   
   Serial.println("Finished Calibrating");
-  
+  //analogReference(EXTERNAL);
 }
 
 void loop(){
