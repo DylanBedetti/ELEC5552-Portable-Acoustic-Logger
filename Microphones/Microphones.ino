@@ -43,7 +43,9 @@ void setup(){
 }
 
 void loop(){
-    if(count == 0) micRead = SD.open("microphone_test.bin", FILE_WRITE);
+    if(count == 0) {
+      micRead = SD.open("mic.bin", FILE_WRITE);
+      }
  // check if a new analysis is available
   if (amp.available()) {
     // read the new amplitude
@@ -56,9 +58,9 @@ void loop(){
      micBuffer[MicIndex++]=high;
      micBuffer[MicIndex++]=low;
      
-     if(MicIndex==512){
-     Serial.println(micRead.write(micBuffer,MicIndex));
-     micRead.close(); //write to SD card
+     if(MicIndex>=512){
+     micRead.write(micBuffer,512);
+     micRead.flush(); //write to SD card
      MicIndex=0;
      }
     }
