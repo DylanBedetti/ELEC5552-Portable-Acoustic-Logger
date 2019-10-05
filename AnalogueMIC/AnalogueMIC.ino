@@ -40,7 +40,7 @@ void setup(){
   audio1.CSPin = SD_ChipSelectPin;//setting audio object select pins
   
   Serial.println("Finished Calibrating");
-  //analogReference(EXTERNAL);
+  analogReference(EXTERNAL);//refference should only be on when using an external power source for mic and connected to the ref on arduino.
 }
 
 void loop(){
@@ -59,7 +59,7 @@ void loop(){
     Serial.println("Recording Started: ");
     Serial.println(filenameA); 
     audio1.startRecording(filenameA, 40000, A0); 
-    mic_loop_timer=millis();
+    nd
   
   }
 }

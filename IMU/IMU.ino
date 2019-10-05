@@ -6,28 +6,23 @@
 #include <Wire.h>
 
 //Declaring some global variables
-short gyro_x, gyro_y, gyro_z;
-long acc_x, acc_y, acc_z, acc_total_vector;
-short temperature;
+int gyro_x, gyro_y, gyro_z;
+long acc_x, acc_y, acc_z;
+int temperature;
 long gyro_x_cal, gyro_y_cal, gyro_z_cal,acc_x_cal,acc_y_cal,acc_z_cal;
 long IMU_timer;
-short lcd_loop_counter;
-float angle_x, angle_y,angle_z,aX,aY,aZ;
-short angle_x_buffer, angle_y_buffer;
-boolean set_gyro_angles;
-short angle_y_acc, angle_x_acc;
-float angle_x_output, angle_y_output;
+int angle_x, angle_y,angle_z,aX,aY,aZ;
 int count=0;
 File accFile;
 //SD CARD 
-const int chipSelect = SS1;
+const int chipSelect = 10;
 
 void setup() {
   //***********SETTING UP WRITES***************************
   
   Wire.begin();                                                        //Start I2C as master
   Serial.begin(9600);                                               //Use only for debugging                                                           // Set chip select on the SD
-  
+  pinMode(5, OUTPUT);// LED PIN
   //**********SETING UP SD CARD****************************
   // see if the card is present and can be initialized:
   Serial.println("TEST");
@@ -36,7 +31,12 @@ void setup() {
      delay(4000);
     Serial.println("Card failed, or not present");
     // don't do anything more:
-   
+    while(true){
+      digitalWrite(5, HIGH);   // turn the LED on (HIGH is the voltage level)
+      delay(1000);                       // wait for a second
+      digitalWrite(5, LOW);    // turn the LED off by making the voltage LOW
+      delay(1000);      
+    }
   }  
   delay(4000);
   Serial.println("card initialized.");
