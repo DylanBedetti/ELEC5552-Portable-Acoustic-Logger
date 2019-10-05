@@ -8,12 +8,15 @@
  
 #include <TinyGPS++.h>
 #include <SoftwareSerial.h>
-
+#include <SPI.h>
+#include <SD.h>
+#define SD_ChipSelectPin 10
 static const int RXPin = 4, TXPin = 3;
 static const uint32_t GPSBaud = 9600;
 
 // The TinyGPS++ object
 TinyGPSPlus gps;
+String DATE="DDMMYY";
 
 // The serial connection to the GPS device
 SoftwareSerial ss(RXPin, TXPin);
@@ -21,6 +24,40 @@ SoftwareSerial ss(RXPin, TXPin);
 void setup(){
   Serial.begin(9600);
   ss.begin(GPSBaud);
+  
+  pinMode(5, OUTPUT);// LED PIN
+  pinMode(5, OUTPUT);// LED PIN GPS READY
+  if (!SD.begin(SD_ChipSelectPin)) {
+     delay(4000);
+    Serial.println("Card failed, or not present");
+    // don't do anything more:
+    while(true){
+      digitalWrite(5, HIGH);   // turn the LED on (HIGH is the voltage level)
+      delay(1000);                       // wait for a second
+      digitalWrite(5, LOW);    // turn the LED off by making the voltage LOW
+      delay(1000);      
+    }
+  }  
+  
+  Serial.println("Setting Up");
+  while(true){
+   if(ss.available()>0){
+   gps.encode(ss.read());
+   if( gps.date.isUpdated()){
+    digitalWrite(6, LOW);
+    Serial.println(gps.date.value()); 
+    DATE=gps.date.value();
+    SD.mkdir(DATE);
+    break;
+    }  
+    else{
+      digitalWrite(6, HIGH);
+      }
+   }
+  }
+   Serial.println("Finished Settup");
+  
+  
 }
 
 void loop(){
