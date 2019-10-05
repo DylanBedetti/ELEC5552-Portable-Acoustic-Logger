@@ -1,4 +1,5 @@
 
+
 //Audio
 #include <pcmRF.h>
 #include <pcmConfig.h>
@@ -10,6 +11,8 @@
 #include <SD.h>
 //MPU6050
 #include <Wire.h>
+
+
 
 
 //SD Card
@@ -73,6 +76,7 @@ void setup() {
   setup_mpu_6050_registers();                                          //Setup the registers of the MPU-6050 (500dfs / +/-2g) and start the gyro
 
   IMU_timer = micros(); 
+  SD.mkdir("ACC");
 }
 
 void loop(){//***************MAIN LOOP************
@@ -80,12 +84,11 @@ void loop(){//***************MAIN LOOP************
 IMU_delay=millis();
 while(IMU_delay==0||millis()-IMU_delay<=IMU_TIME){
   if(IMU_timer==0||micros()-IMU_timer>=IMU_PERIOD){
-  IMU_opperate("ACC.bin");
+  IMU_opperate("ACC/ACC.bin");
   IMU_timer=micros();
   }
  }
  //Serial.println("IMU_Finished");
- delay(10);
  //Serial.println("MIC Started");
  MIC_opperate();
  //Serial.println("MIC Stopped");
@@ -103,6 +106,7 @@ void MIC_opperate(){
     //Serial.println("Recording Stopped: ");
     //Serial.println(filenameA);
     audio1.stopRecording(filenameA);
+   
 }
 
 
