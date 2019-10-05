@@ -40,6 +40,7 @@ void loop(){
       Serial.print(gps.location.rawLat().negative ? "-" : "+");
       Serial.println(gps.location.rawLat().deg); 
       // ... and billionths (u16/u32)
+      Serial.println("raw lat billionths");
       Serial.println(gps.location.rawLat().billionths);
       
       // Raw longitude in whole degrees
@@ -80,22 +81,6 @@ void loop(){
       Serial.print("Centisecond = "); 
       Serial.println(gps.time.centisecond()); 
 
-      // Raw speed in 100ths of a knot (i32)
-      Serial.print("Raw speed in 100ths/knot = ");
-      Serial.println(gps.speed.value()); 
-      // Speed in knots (double)
-      Serial.print("Speed in knots/h = ");
-      Serial.println(gps.speed.knots()); 
-      // Speed in miles per hour (double)
-      Serial.print("Speed in miles/h = ");
-      Serial.println(gps.speed.mph()); 
-      // Speed in meters per second (double)
-      Serial.print("Speed in m/s = ");
-      Serial.println(gps.speed.mps()); 
-      // Speed in kilometers per hour (double)
-      Serial.print("Speed in km/h = "); 
-      Serial.println(gps.speed.kmph()); 
-
       // Raw course in 100ths of a degree (i32)
       Serial.print("Raw course in degrees = "); 
       Serial.println(gps.course.value()); 
@@ -109,15 +94,7 @@ void loop(){
       // Altitude in meters (double)
       Serial.print("Altitude in meters = "); 
       Serial.println(gps.altitude.meters()); 
-      // Altitude in miles (double)
-      Serial.print("Altitude in miles = "); 
-      Serial.println(gps.altitude.miles()); 
-      // Altitude in kilometers (double)
-      Serial.print("Altitude in kilometers = "); 
-      Serial.println(gps.altitude.kilometers()); 
-      // Altitude in feet (double)
-      Serial.print("Altitude in feet = "); 
-      Serial.println(gps.altitude.feet()); 
+    
 
       // Number of satellites in use (u32)
       Serial.print("Number os satellites in use = "); 
@@ -126,6 +103,7 @@ void loop(){
       // Horizontal Dim. of Precision (100ths-i32)
       Serial.print("HDOP = "); 
       Serial.println(gps.hdop.value()); 
+      delay(20000);
     }
   }
 }

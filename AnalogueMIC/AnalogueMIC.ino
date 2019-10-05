@@ -20,13 +20,19 @@ int auCount; //integer to itterate audio files
 void setup(){
   Serial.begin(9600);
   pinMode(A1, INPUT_PULLUP); //setting audio analoginput A
-
+  pinMode(5, OUTPUT);// LED PIN
   // Setting Up SD CARD
   
   if (!SD.begin(SD_ChipSelectPin)) {
      delay(4000);
     Serial.println("Card failed, or not present");
     // don't do anything more:
+    while(true){
+      digitalWrite(5, HIGH);   // turn the LED on (HIGH is the voltage level)
+      delay(1000);                       // wait for a second
+      digitalWrite(5, LOW);    // turn the LED off by making the voltage LOW
+      delay(1000);      
+    }
    
   }  
   delay(4000);
