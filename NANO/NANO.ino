@@ -1,3 +1,4 @@
+
 //Audio
 #include <pcmRF.h>
 #include <pcmConfig.h>
@@ -7,9 +8,10 @@
 //SD Card
 #include <SPI.h>
 #include <SD.h>
-
 //MPU6050
 #include <Wire.h>
+
+
 //SD Card
 #define SD_ChipSelectPin 10
 #define IMU_TIME 30000 //30 seconds recording 
