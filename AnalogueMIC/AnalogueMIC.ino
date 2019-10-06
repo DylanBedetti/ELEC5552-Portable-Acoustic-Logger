@@ -59,7 +59,7 @@ void loop(){
     Serial.println("Recording Started: ");
     Serial.println(filenameA); 
     audio1.startRecording(filenameA, 40000, A0); 
-    nd
+    mic_loop_timer=millis();
   
   }
 }

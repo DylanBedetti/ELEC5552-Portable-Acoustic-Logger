@@ -41,9 +41,7 @@ void setup() {
   //**********SETING UP SD CARD****************************
   // see if the card is present and can be initialized:
   //Serial.println("TEST");
-  delay(4000);
   if (!SD.begin(SD_ChipSelectPin)) {
-     delay(4000);
     //Serial.println("Card failed, or not present");
     // don't do anything more:
     while(true){
@@ -53,7 +51,6 @@ void setup() {
       delay(1000);      
     }
   }  
-  delay(4000);
   //Serial.println("card initialized.");
   audio1.CSPin = SD_ChipSelectPin;// set pin for audio
 
@@ -70,7 +67,7 @@ void setup() {
     }  
    }
   }
- digitalWrite(6, HIGH);
+ //digitalWrite(6, HIGH);
      
 }
 
@@ -88,7 +85,6 @@ String update_time(){
    if(ss.available()>0){
    gps.encode(ss.read());
    if( gps.time.isUpdated()){
-    digitalWrite(6, LOW);
     String temp;
     temp.reserve(9);
     temp=(String)gps.time.value();
@@ -101,11 +97,12 @@ String update_time(){
 
 void MIC_opperate(String time1){
     String filename;
-    filename.reserve(19);
+    filename.reserve(13);
     filename=time1+".WAV";
     char file[12]; //DDMMYY/HHMMSSCC.wav
-    filename.toCharArray(file,19);
+    filename.toCharArray(file,12);
     audio1.startRecording(file,MIC_RATE, A0); 
     delay(MIC_TIME);
     audio1.stopRecording(file); 
+    delay(10000);
 }
