@@ -10,20 +10,19 @@
 #include <SoftwareSerial.h>
 #include <SPI.h>
 #include <SD.h>
-#define SD_ChipSelectPin 10
-static const int RXPin = 4, TXPin = 3;
+#define SD_ChipSelectPin 53
+static const int RXPin = 19, TXPin = 18;
 static const uint32_t GPSBaud = 9600;
 
 // The TinyGPS++ object
 TinyGPSPlus gps;
 String DATE="DDMMYY";
 
-// The serial connection to the GPS device
-SoftwareSerial ss(RXPin, TXPin);
+
 
 void setup(){
   Serial.begin(9600);
-  ss.begin(GPSBaud);
+  Serial1.begin(GPSBaud);
   
   pinMode(5, OUTPUT);// LED PIN
   pinMode(5, OUTPUT);// LED PIN GPS READY
@@ -41,8 +40,8 @@ void setup(){
   
   Serial.println("Setting Up");
   while(true){
-   if(ss.available()>0){
-   gps.encode(ss.read());
+   if(Serial1.available()>0){
+   gps.encode(Serial1.read());
    if( gps.date.isUpdated()){
     digitalWrite(6, LOW);
     Serial.println(gps.date.value()); 
@@ -62,8 +61,8 @@ void setup(){
 
 void loop(){
   // This sketch displays information every time a new sentence is correctly encoded.
-  while (ss.available() > 0){
-    gps.encode(ss.read());
+  while (Serial1.available() > 0){
+    gps.encode(Serial1.read());
     if (gps.location.isUpdated()){
       // Latitude in degrees (double)
       Serial.print("Latitude= "); 
@@ -101,8 +100,8 @@ void loop(){
       Serial.print("Day = "); 
       Serial.println(gps.date.day()); 
 
-      // Raw time in HHMMSSCC format (u32)
-      Serial.print("Raw time in HHMMSSCC = "); 
+      // Raw time in HHMMSerial1CC format (u32)
+      Serial.print("Raw time in HHMMSerial1CC = "); 
       Serial.println(gps.time.value()); 
 
       // Hour (0-23) (u8)

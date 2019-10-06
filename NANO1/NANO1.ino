@@ -14,7 +14,7 @@
 #include <SoftwareSerial.h>
 
 //SD Card
-#define SD_ChipSelectPin 10
+#define SD_ChipSelectPin 53
 #define MIC_TIME 30000 //30 seconds recording
 #define MIC_RATE   40000// 40kHz sampling
 
@@ -22,16 +22,17 @@
 
 TMRpcm audio1;
 int auCount;
-static const int RXPin = 4, TXPin = 3;
+//static const int RXPin = 19, TXPin = 18;
 static const uint32_t GPSBaud = 9600;
 
 // The TinyGPS++ object
 
 String DATE;
 // The serial connection to the GPS device
-SoftwareSerial ss(RXPin, TXPin);
+//SoftwareSerial Serial1(RXPin, TXPin);
 void setup() {  
-  ss.begin(GPSBaud);
+  Serial.begin(9600);
+  Serial1.begin(GPSBaud);
   TinyGPSPlus gps;
   //Use only for debugging                                                           // Set chip select on the SD
   pinMode(5, OUTPUT);// LED PIN
@@ -42,7 +43,7 @@ void setup() {
   // see if the card is present and can be initialized:
   //Serial.println("TEST");
   if (!SD.begin(SD_ChipSelectPin)) {
-    //Serial.println("Card failed, or not present");
+    Serial.println("Card failed, or not present");
     // don't do anything more:
     while(true){
       digitalWrite(5, HIGH);   // turn the LED on (HIGH is the voltage level)
@@ -51,13 +52,13 @@ void setup() {
       delay(1000);      
     }
   }  
-  //Serial.println("card initialized.");
+  Serial.println("card initialized.");
   audio1.CSPin = SD_ChipSelectPin;// set pin for audio
 
   while(true){
-   if(ss.available()>0){
+   if(Serial1.available()>0){
     
-   gps.encode(ss.read());
+   gps.encode(Serial1.read());
    if( gps.date.isUpdated()){
     digitalWrite(6, LOW);
     DATE=(String)gps.date.value(); 
@@ -68,6 +69,7 @@ void setup() {
    }
   }
  //digitalWrite(6, HIGH);
+ Serial.println("GPS WORKED");
      
 }
 
@@ -82,12 +84,27 @@ void loop(){//***************MAIN LOOP************
 String update_time(){
   TinyGPSPlus gps;
   while(true){
-   if(ss.available()>0){
-   gps.encode(ss.read());
-   if( gps.time.isUpdated()){
+   if(Serial1.available()>0){
+   gps.encode(Serial1.read());
+   if( gps.time.isUpdated()&&gps.date.isUpdated()){
     String temp;
-    temp.reserve(9);
-    temp=(String)gps.time.value();
+    temp=(String)gps.date.day();
+    if(temp.length()<2){
+      temp="0"+temp;
+     }
+    temp+=(String)gps.time.hour();
+    if(temp.length()<4){
+      temp="0"+temp;
+     }
+    temp+=(String)gps.time.minute();
+    if(temp.length()<6){
+      temp="0"+temp;
+     }
+    temp+=(String)gps.time.second();
+    if(temp.length()<8){
+      temp="0"+temp;
+     }
+    Serial.println(temp);
     return temp;
     break;
     }  
@@ -97,10 +114,10 @@ String update_time(){
 
 void MIC_opperate(String time1){
     String filename;
-    filename.reserve(13);
+    filename.reserve(19);
     filename=time1+".WAV";
-    char file[12]; //DDMMYY/HHMMSSCC.wav
-    filename.toCharArray(file,12);
+    char file[19]; //DDMMYY/HHMMSSCC.wav
+    filename.toCharArray(file,19);
     audio1.startRecording(file,MIC_RATE, A0); 
     delay(MIC_TIME);
     audio1.stopRecording(file); 
