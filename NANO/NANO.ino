@@ -1,5 +1,3 @@
-
-
 //Audio
 #include <pcmRF.h>
 #include <pcmConfig.h>
@@ -9,14 +7,11 @@
 //SD Card
 #include <SPI.h>
 #include <SD.h>
+
 //MPU6050
 #include <Wire.h>
-
-
-
-
 //SD Card
-#define SD_ChipSelectPin 10
+#define SD_ChipSelectPin 53
 #define IMU_TIME 30000 //30 seconds recording 
 #define MIC_TIME 30000 //30 seconds recording
 #define IMU_PERIOD 4000// 4000uS or 250Hz
@@ -35,6 +30,7 @@
 TMRpcm audio1;
 long mic_loop_timer; //loop timer
 int auCount;
+int count;
 //Declaring some global variables IMU
 //***********************************
 int gyro_x, gyro_y, gyro_z;
@@ -51,7 +47,7 @@ void setup() {
   //***********SETTING UP WRITES***************************
   
   Wire.begin();                                                        //Start I2C as master
-  //Serial.begin(9600);                                               //Use only for debugging                                                           // Set chip select on the SD
+  Serial.begin(9600);                                               //Use only for debugging                                                           // Set chip select on the SD
   pinMode(5, OUTPUT);// LED PIN
   pinMode(A1, INPUT);// MIC IN
   analogReference(EXTERNAL);//set analouge ref voltage to external source.
@@ -61,7 +57,7 @@ void setup() {
   delay(4000);
   if (!SD.begin(SD_ChipSelectPin)) {
      delay(4000);
-    //Serial.println("Card failed, or not present");
+    Serial.println("Card failed, or not present");
     // don't do anything more:
     while(true){
       digitalWrite(5, HIGH);   // turn the LED on (HIGH is the voltage level)
@@ -71,12 +67,11 @@ void setup() {
     }
   }  
   delay(4000);
-  //Serial.println("card initialized.");
+  Serial.println("card initialized.");
   audio1.CSPin = SD_ChipSelectPin;// set pin for audio
   setup_mpu_6050_registers();                                          //Setup the registers of the MPU-6050 (500dfs / +/-2g) and start the gyro
 
   IMU_timer = micros(); 
-  SD.mkdir("ACC");
 }
 
 void loop(){//***************MAIN LOOP************
@@ -84,29 +79,36 @@ void loop(){//***************MAIN LOOP************
 IMU_delay=millis();
 while(IMU_delay==0||millis()-IMU_delay<=IMU_TIME){
   if(IMU_timer==0||micros()-IMU_timer>=IMU_PERIOD){
-  IMU_opperate("ACC/ACC.bin");
+  IMU_opperate("ACC.bin");
   IMU_timer=micros();
   }
  }
  //Serial.println("IMU_Finished");
- //Serial.println("MIC Started");
- MIC_opperate();
- //Serial.println("MIC Stopped");
+ if(mic_loop_timer==0|millis()-mic_loop_timer>=MIC_TIME){//create a new wave file every 1/4 minutes
+    char filenameA[] ="A1.WAV";
+    if(count!=0){
+     Serial.println("Recording Stopped: ");
+     Serial.println(filenameA);
+     audio1.stopRecording(filenameA); 
+    }
+    count=1; // make sure you start stopping files
+    auCount++;//make sure you increase file number
+    filenameA[1]=auCount+'0';
+    
+    Serial.println("Recording Started: ");
+    Serial.println(filenameA); 
+    audio1.startRecording(filenameA, MIC_RATE, A0); 
+    mic_loop_timer=millis();
+  }
 }
 
 void MIC_opperate(){
     char filenameA[]="A0.WAV"; //Audio Input file 1
     auCount++;//make sure you increase file number
     filenameA[1]=auCount+'0';
-    
-    //Serial.println("Recording Started: ");
-    //Serial.println(filenameA); 
     audio1.startRecording(filenameA,MIC_RATE, A0); 
     delay(MIC_TIME);
-    //Serial.println("Recording Stopped: ");
-    //Serial.println(filenameA);
     audio1.stopRecording(filenameA);
-   
 }
 
 

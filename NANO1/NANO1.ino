@@ -75,9 +75,9 @@ void setup() {
 
 
 void loop(){//***************MAIN LOOP************
+  GPS_write();
   String time1=update_time();
- delay(15000);//15 second delay while the buffer closes
- MIC_opperate(time1);
+  MIC_opperate(time1);
 }
 
 
@@ -88,22 +88,28 @@ String update_time(){
    gps.encode(Serial1.read());
    if( gps.time.isUpdated()&&gps.date.isUpdated()){
     String temp;
+    String val;
+    temp.reserve(12);
+    val.reserve(2);
     temp=(String)gps.date.day();
     if(temp.length()<2){
       temp="0"+temp;
      }
-    temp+=(String)gps.time.hour();
-    if(temp.length()<4){
-      temp="0"+temp;
+    val=(String)gps.time.hour();
+    if(val.length()<2){
+      val="0"+val;
      }
-    temp+=(String)gps.time.minute();
-    if(temp.length()<6){
-      temp="0"+temp;
+     temp+=val;
+    val=(String)gps.time.minute();
+    if(val.length()<2){
+      val="0"+val;
      }
-    temp+=(String)gps.time.second();
-    if(temp.length()<8){
-      temp="0"+temp;
+     temp+=val;
+    val=(String)gps.time.second();
+    if(val.length()<2){
+      val="0"+val;
      }
+    temp+=val;
     Serial.println(temp);
     return temp;
     break;
@@ -122,4 +128,32 @@ void MIC_opperate(String time1){
     delay(MIC_TIME);
     audio1.stopRecording(file); 
     delay(10000);
+}
+
+void GPS_write(){
+ char fileName[]="gps.log";
+ File gpsFile = SD.open(fileName,FILE_WRITE);
+ TinyGPSPlus gps;
+  while(true){
+   if(Serial1.available()>0){
+   gps.encode(Serial1.read());
+   if( gps.location.isUpdated()&&gps.date.isUpdated()&&gps.time.isUpdated()){
+    String date2;
+    String time2;
+    String lat2;
+    String lng2;
+    date2.reserve(6);
+    time2.reserve(8);
+    date2=(String) gps.date.value();
+    time2=(String) gps.time.value();
+    lat2=(gps.location.rawLat().negative ? "-" : "+");
+    lng2=(gps.location.rawLng().negative ? "-" : "+");
+    gpsFile.print(date2+","+time2+",");
+    gpsFile.print(lat2+",");
+    gpsFile.print(lng2+"\n");
+    gpsFile.close();
+    break;
+    }  
+   }
+  } 
 }
