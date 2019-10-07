@@ -136,14 +136,23 @@ String update_time(){
 }
 
 void MIC_opperate(String time1){
-    String filename;
-    filename.reserve(13);
-    filename=time1+".MC1";
-    char file[13]; //DDHHMMSS.MC1
-    filename.toCharArray(file,13);
-    audio1.startRecording(file,MIC_RATE, A0); 
+    String filename1;
+    String filename2;
+    filename1.reserve(13);
+    filename2.reserve(13);
+    filename1=(String)auCount+".MC1";
+    auCount++;
+    filename2=(String)auCount+".MC2";
+    auCount++;
+    char file1[13]; //DDHHMMSS.MC1
+    char file2[13]; //DDHHMMSS.MC1
+    filename1.toCharArray(file1,13);
+    filename2.toCharArray(file2,13);
+    audio1.startRecording(file1,MIC_RATE, A0); 
+    audio1.startRecording(file2,MIC_RATE, A1); 
     delay(MIC_TIME);
-    audio1.stopRecording(file); 
+    audio1.stopRecording(file1);
+    audio1.stopRecording(file2); 
     delay(10000);
 }
 

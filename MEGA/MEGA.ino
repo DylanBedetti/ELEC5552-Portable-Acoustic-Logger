@@ -1,4 +1,7 @@
 
+
+//configfile
+#include "MEGAconfig.h"
 //Audio
 #include <pcmRF.h>
 #include <pcmConfig.h>
@@ -16,13 +19,6 @@
 
 //SD Card
 #define SD_ChipSelectPin 53
-
-//USER DEFINED SETTINGS
-//=====================
-#define MIC_TIME 30000 //30 seconds recording mic
-#define MIC_RATE   40000// 40kHz sampling
-#define IMU_TIME 30000 //30 seconds recording acc
-#define IMU_PERIOD 4000// 4000uS or 250Hz
 
 
 TMRpcm audio1;
@@ -85,16 +81,21 @@ void setup() {
 void loop(){//***************MAIN LOOP************
   GPS_write();
   String time1=update_time();
-  MIC_opperate(time1);
+  if(MIC_OFF==0){                 //MIC ON or OFF
+    MIC_opperate(time1);
+  }
   time1=update_time();//update time again
-  IMU_delay=millis();
-  
+  if(ACC_OFF==0){                 //MIC ON or OFF 
+    IMU_delay=millis();
     while(IMU_delay==0||millis()-IMU_delay<=IMU_TIME){
     if(IMU_timer==0||micros()-IMU_timer>=IMU_PERIOD){
     IMU_opperate(time1);
     IMU_timer=micros();
     }
-  }
+   }
+ }
+
+  delay(SLEEP);
 }
 
 
@@ -144,7 +145,6 @@ void MIC_opperate(String time1){
     audio1.startRecording(file,MIC_RATE, A0); 
     delay(MIC_TIME);
     audio1.stopRecording(file); 
-    delay(10000);
 }
 
 void GPS_write(){
