@@ -146,8 +146,8 @@ void GPS_write(){
     time2.reserve(8);
     date2=(String) gps.date.value();
     time2=(String) gps.time.value();
-    lat2=(gps.location.rawLat().negative ? "-" : "+");
-    lng2=(gps.location.rawLng().negative ? "-" : "+");
+    lat2=(gps.location.rawLat().negative ? "-" : "+")+gps.location.rawLat().deg;
+    lng2=(gps.location.rawLng().negative ? "-" : "+")+gps.location.rawLng().deg;
     gpsFile.print(date2+","+time2+",");
     gpsFile.print(lat2+",");
     gpsFile.print(lng2+"\n");
