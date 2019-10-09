@@ -40,6 +40,9 @@ long IMU_timer;
 long IMU_delay;
 long SLEEP_timer;
 
+//led button 
+volatile boolean SDremove =false;
+
 void setup() {  
   Serial.begin(9600);
   Serial1.begin(GPSBaud);
@@ -47,6 +50,7 @@ void setup() {
   //Use only for debugging                                                           // Set chip select on the SD
   pinMode(48, OUTPUT);// LED PIN
   pinMode(49, OUTPUT);// LED PIN
+  pinMode(47, INPUT);// button pressed to safely remove SD card
   pinMode(A1, INPUT);// MIC IN
   //analogReference(EXTERNAL);//set analouge ref voltage to external source.
   //**********SETING UP SD CARD****************************
@@ -56,9 +60,9 @@ void setup() {
     Serial.println("Card failed, or not present");
     // don't do anything more:
     while(true){
-      digitalWrite(5, HIGH);   // turn the LED on (HIGH is the voltage level)
+      digitalWrite(48, HIGH);   // turn the LED on (HIGH is the voltage level)
       delay(1000);                       // wait for a second
-      digitalWrite(5, LOW);    // turn the LED off by making the voltage LOW
+      digitalWrite(48, LOW);    // turn the LED off by making the voltage LOW
       delay(1000);      
     }
   }  
@@ -74,28 +78,36 @@ void setup() {
    }
   }
  Serial.println("GPS WORKED");
+ //attach SD card remove interupt 
+ attachInterrupt(digitalPinToInterrupt(3),button_pressed,RISING);
  //*******CALIBRATING THE ACC AND GYRO********************
  setup_mpu_6050_registers(); //setup accelerometer 
  calibrate_acc_gyros();
  Serial.println("finished calabrating acc");     
- digitalWrite(6, HIGH);
- delay(20000);//LED comes on for 20 seconds
- digitalWrite(6, LOW);
+ digitalWrite(49, HIGH);
+ delay(2000);//LED comes on for 20 seconds
+digitalWrite(49, LOW);
  
  //setup power saving
  //power_save_setup();
-
+ Serial.println("power saving completed");
  
+}
+
+void button_pressed(){
+SDremove=true;
 }
 
 
 void loop(){//***************MAIN LOOP************
+  safe_sd_close();
   GPS_write();
+  safe_sd_close();
   String time1=update_time();
   if(MIC_OFF==0){                 //MIC ON or OFF
     MIC_opperate(time1);
   }
-  
+  safe_sd_close();
   time1=update_time();//update time again
 
   
@@ -108,19 +120,34 @@ void loop(){//***************MAIN LOOP************
     }
    }
  }
- 
- if(SLEEP_OFF==0){
-    if(micros()-SLEEP_timer>=SLEEP_PERIOD){
-      for(int i=0;i<=SLEEP_TIME;i++){
+safe_sd_close();
+if(SLEEP_OFF==0){
+  if(micros()-SLEEP_timer>=SLEEP_PERIOD){
+    Serial.println("sleep started");
+    for(int i=0;i<=SLEEP_TIME;i++){
       int sleepMS = Watchdog.sleep(8000); 
+       }
+         SLEEP_timer=millis();
       }
-      SLEEP_timer=millis();
+     Serial.println("sleep ended");
     }
-  }
 
-  
+safe_sd_close();
 }
 
+
+void safe_sd_close(){
+  if(SDremove){
+//    //turn on LED to say SD card is safe to remove
+    Serial.println("SD card safe to remove");
+    delay(1000);
+    digitalWrite(49, HIGH);
+    SDremove=false;
+    while(true){//loop forever 
+    int sleepMS = Watchdog.sleep(8000);//just keep sleeping to save battery 
+    } 
+  }   
+}
 
 String update_time(){
   TinyGPSPlus gps;
@@ -172,12 +199,13 @@ void MIC_opperate(String time1){
 
 void GPS_write(){
  char fileName[]="gps.log";
+ Serial.println("GPS1");
  File gpsFile = SD.open(fileName,FILE_WRITE);
  TinyGPSPlus gps;
   while(true){
    if(Serial1.available()>0){
    gps.encode(Serial1.read());
-   if( gps.location.isUpdated()&&gps.date.isUpdated()&&gps.time.isUpdated()){
+  // if( gps.location.isUpdated()&&gps.date.isUpdated()&&gps.time.isUpdated()){
     String date2;
     String time2;
     String lat2;
@@ -192,8 +220,9 @@ void GPS_write(){
     gpsFile.print(lat2+",");
     gpsFile.print(lng2+"\n");
     gpsFile.close();
+    Serial.println("GPS2");
     break;
-    }  
+    //}  
    }
   } 
 }
@@ -318,9 +347,9 @@ void calibrate_acc_gyros(){
   digitalWrite(A6,LOW);
   digitalWrite(A7,LOW);
   
-  //turn off all digital pins except 48-53,19,18
-  for (int i=0;i<=48;i++){
-    if(i!=18||i!=19){
+  //turn off all digital pins except 47-53,19,18,3 for digital interupt
+  for (int i=0;i<=47;i++){
+    if(i!=18||i!=19||i!=3){
     pinMode(i,OUTPUT);
     digitalWrite(i,LOW);
     }
