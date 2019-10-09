@@ -205,7 +205,7 @@ void GPS_write(){
   while(true){
    if(Serial1.available()>0){
    gps.encode(Serial1.read());
-  // if( gps.location.isUpdated()&&gps.date.isUpdated()&&gps.time.isUpdated()){
+  if( gps.location.isUpdated()&&gps.date.isUpdated()&&gps.time.isUpdated()){
     String date2;
     String time2;
     String lat2;
@@ -222,7 +222,7 @@ void GPS_write(){
     gpsFile.close();
     Serial.println("GPS2");
     break;
-    //}  
+    }  
    }
   } 
 }
