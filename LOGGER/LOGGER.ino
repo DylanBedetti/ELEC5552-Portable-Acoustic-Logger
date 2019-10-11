@@ -57,7 +57,7 @@ void setup() {
   // see if the card is present and can be initialized:
   //Serial.println("TEST");
   if (!SD.begin(SD_ChipSelectPin)) {
-    Serial.println("Card failed, or not present");
+    Serial.println(F("Card failed, or not present"));
     // don't do anything more:
     while(true){
       digitalWrite(48, HIGH);   // turn the LED on (HIGH is the voltage level)
@@ -72,25 +72,25 @@ void setup() {
   while(true){
    if(Serial1.available()>0){
    gps.encode(Serial1.read());
-   if( gps.date.isUpdated()){
+   if( gps.location.isUpdated()&&gps.date.isUpdated()&&gps.time.isUpdated()){
     break;
     }  
    }
   }
- Serial.println("GPS WORKED");
- //attach SD card remove interupt 
+ Serial.println(F("GPS WORKED"));
+// attach SD card remove interupt 
  attachInterrupt(digitalPinToInterrupt(3),button_pressed,RISING);
- //*******CALIBRATING THE ACC AND GYRO********************
+//*******CALIBRATING THE ACC AND GYRO********************
  setup_mpu_6050_registers(); //setup accelerometer 
  calibrate_acc_gyros();
- Serial.println("finished calabrating acc");     
+ Serial.println(F("finished calabrating acc"));     
  digitalWrite(49, HIGH);
  delay(2000);//LED comes on for 20 seconds
-digitalWrite(49, LOW);
+ digitalWrite(49, LOW);
  
  //setup power saving
  //power_save_setup();
- Serial.println("power saving completed");
+Serial.println(F("power saving completed"));
  
 }
 
@@ -130,6 +130,7 @@ if(SLEEP_OFF==0){
          SLEEP_timer=millis();
       }
      Serial.println("sleep ended");
+     SDremove=false;
     }
 
 safe_sd_close();
@@ -141,7 +142,7 @@ void safe_sd_close(){
 //    //turn on LED to say SD card is safe to remove
     Serial.println("SD card safe to remove");
     delay(1000);
-    digitalWrite(49, HIGH);
+    digitalWrite(48, HIGH);
     SDremove=false;
     while(true){//loop forever 
     int sleepMS = Watchdog.sleep(8000);//just keep sleeping to save battery 

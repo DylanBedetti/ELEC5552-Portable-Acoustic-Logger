@@ -15,7 +15,7 @@ int angle_x, angle_y,angle_z,aX,aY,aZ;
 int count=0;
 File accFile;
 //SD CARD 
-const int chipSelect = 10;
+const int chipSelect = 53;
 
 void setup() {
   //***********SETTING UP WRITES***************************
@@ -41,7 +41,7 @@ void setup() {
   delay(4000);
   Serial.println("card initialized.");
   setup_mpu_6050_registers();                                          //Setup the registers of the MPU-6050 (500dfs / +/-2g) and start the gyro
-
+  Serial.println("Accelerometer");
   //*******CALIBRATING THE ACC AND GYRO********************
   calibrate_acc_gyros();
   Serial.println("finished calabrating acc");
